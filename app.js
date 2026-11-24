@@ -1,6 +1,9 @@
 "use strict";
 
 const STORAGE_KEY = "wortschatz";
+const SYNC_URL = "https://wortschatz-sync.ahelwegmikkelsen.workers.dev/sync";
+const SYNC_DELAY_MILLISECONDS = 4000;
+const SYNC_INTERVAL_MILLISECONDS = 5 * 60 * 1000;
 const BATCH_SIZE = 5;
 const TIMES_EACH_ITEM = 4;
 const DRAWS_SCHEDULED_AHEAD = 3;
@@ -46,6 +49,9 @@ const state = {
   tab: "sentences",
   settings: { ...DEFAULT_SETTINGS, ...storedState.settings },
   tracked: storedState.tracked ?? {},
+  unsyncedIDs: new Set(storedState.unsyncedIDs ?? Object.keys(storedState.tracked ?? {})),
+  syncKey: storedState.syncKey ?? "",
+  syncStatus: "",
   repetitionQuery: "",
   categoryQuery: "",
   sentences: [],
@@ -58,7 +64,7 @@ const state = {
 
 function persist() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ settings: state.settings, tracked: state.tracked }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ settings: state.settings, tracked: state.tracked, unsyncedIDs: [...state.unsyncedIDs], syncKey: state.syncKey }));
   } catch {}
 }
 
@@ -362,7 +368,9 @@ function registerMediaSessionActions() {
 }
 
 function trackedEntry(sentenceID) {
-  state.tracked[sentenceID] ??= { roundsHeard: 0, lastHeard: Date.now(), weightStep: 0 };
+  state.tracked[sentenceID] ??= { roundsHeard: 0, lastHeard: Date.now(), weightStep: 0, weightChanged: 0 };
+  state.unsyncedIDs.add(sentenceID);
+  scheduleSync();
   return state.tracked[sentenceID];
 }
 
@@ -410,7 +418,9 @@ function sentenceRoundCallbacks() {
       persist();
     },
     onWeightStepChanged: (sentence, weightStep) => {
-      trackedEntry(sentence.id).weightStep = weightStep;
+      const entry = trackedEntry(sentence.id);
+      entry.weightStep = weightStep;
+      entry.weightChanged = Date.now();
       persist();
     },
   };
@@ -526,6 +536,10 @@ function renderSentencesTab() {
     <div class="row"><input type="text" id="repetition-query" placeholder="Søg på tysk ord" autocomplete="off" autocapitalize="off" spellcheck="false" value="${escapeHTML(state.repetitionQuery)}" data-input="repetitionQuery"></div>
     ${query ? `<div class="row"><span>Matchende sætninger</span><span class="value">${repetitionCount}</span></div>` : ""}
     <button class="start" data-action="start-repetition" ${repetitionCount === 0 ? "disabled" : ""}>Start repetition</button>
+  </div></div>
+  <div class="section"><h2>Synkronisering</h2><div class="card">
+    <div class="row"><input type="text" id="sync-key" placeholder="Nøgle, fx abcd-efgh-jkmn" autocomplete="off" autocapitalize="off" spellcheck="false" value="${escapeHTML(state.syncKey)}" data-input="syncKey"></div>
+    ${state.syncStatus ? `<div class="row"><span>Status</span><span class="value">${escapeHTML(state.syncStatus)}</span></div>` : ""}
   </div></div>
   <div class="section"><h2>Afspilning</h2><div class="card">
     ${speedRow()}
@@ -677,6 +691,10 @@ document.addEventListener("input", (event) => {
     audio.defaultPlaybackRate = state.settings.speed;
     document.querySelectorAll("[data-speed-label]").forEach((label) => { label.textContent = formatPercent(state.settings.speed); });
     persist();
+  } else if (field === "syncKey") {
+    state.syncKey = event.target.value.trim().toLowerCase();
+    persist();
+    scheduleSync();
   } else if (field) {
     state[field] = event.target.value;
     render();
@@ -698,5 +716,72 @@ async function loadData() {
   render();
 }
 
+let syncTimer = null;
+let isSyncing = false;
+
+function scheduleSync(delay = SYNC_DELAY_MILLISECONDS) {
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(synchronize, delay);
+}
+
+function mergedEntry(localEntry, remoteEntry) {
+  const remoteWeightIsNewer = (remoteEntry.weightChanged ?? 0) > (localEntry?.weightChanged ?? 0);
+  return {
+    roundsHeard: Math.max(localEntry?.roundsHeard ?? 0, remoteEntry.roundsHeard),
+    lastHeard: Math.max(localEntry?.lastHeard ?? 0, remoteEntry.lastHeard),
+    weightStep: remoteWeightIsNewer ? remoteEntry.weightStep : localEntry?.weightStep ?? 0,
+    weightChanged: Math.max(localEntry?.weightChanged ?? 0, remoteEntry.weightChanged ?? 0),
+  };
+}
+
+function setSyncStatus(syncStatus) {
+  state.syncStatus = syncStatus;
+  if (!state.round) render();
+}
+
+async function synchronize() {
+  if (!state.syncKey || isSyncing) return;
+  isSyncing = true;
+  const sentChanges = [...state.unsyncedIDs].filter((sentenceID) => state.tracked[sentenceID]).map((sentenceID) => ({
+    id: sentenceID,
+    roundsHeard: state.tracked[sentenceID].roundsHeard,
+    lastHeard: Math.round(state.tracked[sentenceID].lastHeard),
+    weightStep: state.tracked[sentenceID].weightStep ?? 0,
+    weightChanged: Math.round(state.tracked[sentenceID].weightChanged ?? 0),
+  }));
+  try {
+    const response = await fetch(SYNC_URL, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${state.syncKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ changes: sentChanges }),
+    });
+    if (response.status === 401) throw new Error("forkert nøgle");
+    if (!response.ok) throw new Error(`server ${response.status}`);
+    const { entries } = await response.json();
+    sentChanges.filter((change) => JSON.stringify(mergedEntry(state.tracked[change.id], change)) === JSON.stringify(mergedEntry(change, change))).forEach((change) => state.unsyncedIDs.delete(change.id));
+    entries.forEach((remoteEntry) => { state.tracked[remoteEntry.id] = mergedEntry(state.tracked[remoteEntry.id], remoteEntry); });
+    persist();
+    setSyncStatus(`Synkroniseret kl. ${new Date().toLocaleTimeString("da-DK", { hour: "2-digit", minute: "2-digit" })} · ${heardSentenceIDs().size} hørte`);
+  } catch (error) {
+    setSyncStatus(`Ikke synkroniseret: ${error.message}`);
+  } finally {
+    isSyncing = false;
+  }
+}
+
+function adoptSyncKeyFromAddress() {
+  const syncKey = new URLSearchParams(location.hash.slice(1)).get("noegle");
+  if (!syncKey) return;
+  state.syncKey = syncKey.trim().toLowerCase();
+  persist();
+  history.replaceState(null, "", location.pathname);
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") scheduleSync(0);
+});
+
+adoptSyncKeyFromAddress();
 registerMediaSessionActions();
-loadData();
+loadData().then(() => scheduleSync(0));
+setInterval(() => scheduleSync(0), SYNC_INTERVAL_MILLISECONDS);
