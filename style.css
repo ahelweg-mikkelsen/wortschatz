@@ -83,6 +83,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 36px; }
 .hint { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: 22px; background: rgba(255, 159, 10, 0.15); color: var(--orange); font-size: 20px; }
 .reveal, .learned { padding: 14px 28px; border: 0; border-radius: 12px; background: var(--card-raised); color: var(--accent); font: inherit; cursor: pointer; }
 
+.german-below { text-align: center; font-size: 26px; color: var(--secondary); margin: 0 0 16px; }
 .weight { display: flex; align-items: center; justify-content: center; gap: 28px; margin: 4px 0 12px; }
 .weight span { min-width: 170px; text-align: center; color: var(--secondary); font-variant-numeric: tabular-nums; }
 .round-button { width: 64px; height: 64px; border: 3px solid var(--accent); border-radius: 50%; background: none; color: var(--accent); font: inherit; font-size: 26px; cursor: pointer; display: grid; place-items: center; }
@@ -104,7 +105,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 36px; }
   body { font-size: 17px; }
   .counter { font-size: 44px; }
   .item .da { font-size: 26px; }
-  .item .de { font-size: 20px; }
+  .item .de, .german-below { font-size: 20px; }
   .item .word-da { font-size: 40px; }
   .item .word-de { font-size: 28px; }
   .controls { gap: 32px; }

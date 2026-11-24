@@ -589,7 +589,6 @@ function renderSentenceCard(sentence) {
   return `<div class="item">
     ${showDanish || revealed ? `<div class="da">${escapeHTML(sentence.da)}</div>` : ""}
     ${showTenseHint && sentence.tidshint ? `<div class="hint">${ICONS.clock}Tysk: ${escapeHTML(sentence.tidshint)}</div>` : ""}
-    ${showGerman || revealed ? `<div class="de">${escapeHTML(sentence.de)}</div>` : ""}
     ${!(showGerman && showDanish) && !revealed ? `<button class="reveal" data-action="reveal">Vis tekst</button>` : ""}
   </div>`;
 }
@@ -631,7 +630,8 @@ function renderPlayer() {
           <button class="round-button" data-action="weight" data-direction="-1" aria-label="Sjældnere" ${round.currentWeightStep <= WEIGHT_STEP_RANGE[0] ? "disabled" : ""}>${ICONS.down}</button>
           <span>${weightLabel(round.currentWeightStep)}</span>
           <button class="round-button" data-action="weight" data-direction="1" aria-label="Oftere" ${round.currentWeightStep >= WEIGHT_STEP_RANGE[1] ? "disabled" : ""}>${ICONS.up}</button>
-        </div>` : ""}
+        </div>
+        ${state.settings.showGerman || state.isTextRevealed ? `<div class="german-below">${escapeHTML(round.currentItem.de)}</div>` : ""}` : ""}
         ${isSentenceRound && !round.isEndless ? `<div class="learned-wrap"><button class="learned" data-action="learned">✓ Indøvet</button></div>` : ""}`}
     ${round.playbackError ? `<p class="error">${escapeHTML(round.playbackError)}</p>` : ""}
     <div class="controls">
