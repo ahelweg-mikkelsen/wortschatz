@@ -9,6 +9,13 @@ const TIMES_EACH_ITEM = 4;
 const DRAWS_SCHEDULED_AHEAD = 3;
 const LEAD_IN_SECONDS = 0.5;
 const WEIGHT_STEP_RANGE = [-3, 3];
+const AWAIT_ANSWER = "await-answer";
+const LISTEN_INTERVAL_MILLISECONDS = 50;
+const SPEECH_TO_NOISE_RATIO = 2.5;
+const SILENCE_TO_NOISE_RATIO = 1.6;
+const SPEECH_CONFIRMATION_MILLISECONDS = 250;
+const SILENCE_AFTER_SPEECH_MILLISECONDS = 1100;
+const MINIMUM_NOISE_LEVEL = 0.002;
 const LEVELS = [1, 2, 3, 4, 5];
 const DEFAULT_SETTINGS = {
   level: 1,
@@ -17,6 +24,8 @@ const DEFAULT_SETTINGS = {
   pauseSeconds: 2,
   translationPauseSeconds: 3,
   danishFirst: true,
+  waitsForAnswer: true,
+  continuesOnSpeech: false,
   showDanish: false,
   showGerman: false,
   showTenseHint: true,
@@ -58,6 +67,7 @@ const state = {
   words: [],
   sentenceByID: new Map(),
   round: null,
+  microphoneError: "",
   isTextRevealed: false,
   loadError: null,
 };
@@ -150,8 +160,8 @@ const audio = new Audio();
 audio.preload = "auto";
 
 class Round {
-  constructor({ kind, title, pool, isEndless, weightSteps, danishFirst, pauseSeconds, translationPauseSeconds, onItemLearned, onWeightStepChanged }) {
-    Object.assign(this, { kind, title, pool, isEndless, weightSteps: { ...weightSteps }, danishFirst, pauseSeconds, translationPauseSeconds, onItemLearned, onWeightStepChanged });
+  constructor({ kind, title, pool, isEndless, weightSteps, danishFirst, waitsForAnswer = false, pauseSeconds, translationPauseSeconds, onItemLearned, onWeightStepChanged }) {
+    Object.assign(this, { kind, title, pool, isEndless, weightSteps: { ...weightSteps }, danishFirst, waitsForAnswer, pauseSeconds, translationPauseSeconds, onItemLearned, onWeightStepChanged });
     const drawOrderByBatch = isEndless
       ? [Array.from({ length: Math.min(DRAWS_SCHEDULED_AHEAD, pool.length) }).reduce((draws) => [...draws, weightedDraw(pool, this.weightSteps, new Set(draws.map((item) => item.id)))], [])]
       : Array.from({ length: Math.ceil(pool.length / BATCH_SIZE) }, (_, batch) => shuffleBag(pool.slice(batch * BATCH_SIZE, (batch + 1) * BATCH_SIZE), TIMES_EACH_ITEM));
@@ -159,6 +169,7 @@ class Round {
     this.batchOfDraw = drawOrderByBatch.flatMap((batchDrawOrder, batch) => Array(batchDrawOrder.length).fill(batch));
     this.currentDraw = 0;
     this.isPlaying = false;
+    this.isAwaitingAnswer = false;
     this.isFinished = false;
     this.playbackError = null;
     this.generation = 0;
@@ -203,7 +214,7 @@ class Round {
     const item = this.drawOrder[drawIndex];
     const directory = this.audioDirectory();
     return [
-      ...(this.danishFirst ? [`${directory}/da/${item.id}.mp3`, silenceURL(this.translationPauseSeconds)] : []),
+      ...(this.danishFirst ? [`${directory}/da/${item.id}.mp3`, this.waitsForAnswer ? AWAIT_ANSWER : silenceURL(this.translationPauseSeconds)] : []),
       `${directory}/de/${item.id}.mp3`,
       silenceURL(this.pauseSeconds),
     ];
@@ -221,6 +232,8 @@ class Round {
 
   restartPlayback(firstDraw) {
     this.generation += 1;
+    this.isAwaitingAnswer = false;
+    stopListening();
     this.currentDraw = firstDraw;
     this.isFinished = false;
     this.isPlaying = true;
@@ -237,6 +250,10 @@ class Round {
       this.advancePastCurrentDraw(generation);
       return;
     }
+    if (segmentURL === AWAIT_ANSWER) {
+      this.awaitAnswer(generation);
+      return;
+    }
     audio.src = segmentURL;
     audio.defaultPlaybackRate = state.settings.speed;
     audio.playbackRate = state.settings.speed;
@@ -247,6 +264,25 @@ class Round {
       this.playNextSegment(generation);
     };
     if (this.isPlaying) audio.play().catch((error) => this.reportPlayFailure(error));
+  }
+
+  awaitAnswer(generation) {
+    this.isAwaitingAnswer = true;
+    this.isPlaying = false;
+    if (state.settings.continuesOnSpeech) listenForAnswer(() => generation === this.generation && this.continueAfterAnswer());
+    publishNowPlaying();
+    render();
+  }
+
+  continueAfterAnswer() {
+    if (!this.isAwaitingAnswer) return;
+    this.isAwaitingAnswer = false;
+    stopListening();
+    this.isPlaying = true;
+    this.playbackError = null;
+    this.playNextSegment(this.generation);
+    publishNowPlaying();
+    render();
   }
 
   reportPlayFailure(error) {
@@ -290,7 +326,9 @@ class Round {
   }
 
   togglePlayback() {
-    if (this.isFinished) {
+    if (this.isAwaitingAnswer) {
+      this.continueAfterAnswer();
+    } else if (this.isFinished) {
       this.restartPlayback(0);
     } else if (this.isPlaying) {
       audio.pause();
@@ -329,6 +367,8 @@ class Round {
   stop() {
     this.generation += 1;
     this.isPlaying = false;
+    this.isAwaitingAnswer = false;
+    closeMicrophone();
     audio.pause();
     audio.removeAttribute("src");
     audio.load();
@@ -339,6 +379,66 @@ class Round {
       ? `${this.title} · træk ${this.currentDraw + 1} af ${this.pool.length}`
       : `Pulje ${this.currentBatch + 1} af ${this.batchCount} · træk ${this.drawInCurrentBatch + 1} af ${this.drawsInCurrentBatch}`;
   }
+}
+
+const microphone = { stream: null, context: null, analyser: null, timer: null };
+
+async function openMicrophone() {
+  microphone.stream ??= await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+  microphone.context ??= new AudioContext();
+  if (!microphone.analyser) {
+    microphone.analyser = microphone.context.createAnalyser();
+    microphone.analyser.fftSize = 1024;
+    microphone.context.createMediaStreamSource(microphone.stream).connect(microphone.analyser);
+  }
+}
+
+function closeMicrophone() {
+  stopListening();
+  microphone.stream?.getTracks().forEach((track) => track.stop());
+  microphone.context?.close().catch(() => {});
+  Object.assign(microphone, { stream: null, context: null, analyser: null });
+}
+
+function stopListening() {
+  clearInterval(microphone.timer);
+  microphone.timer = null;
+}
+
+function listenForAnswer(onAnswerFinished) {
+  stopListening();
+  if (!microphone.analyser) return;
+  microphone.context.resume().catch(() => {});
+  const samples = new Float32Array(microphone.analyser.fftSize);
+  const listening = { noiseLevel: null, speechMilliseconds: 0, silenceMilliseconds: 0 };
+  microphone.timer = setInterval(() => {
+    microphone.analyser.getFloatTimeDomainData(samples);
+    const level = Math.sqrt(samples.reduce((sum, sample) => sum + sample * sample, 0) / samples.length);
+    listening.noiseLevel ??= Math.max(level, MINIMUM_NOISE_LEVEL);
+    if (listening.speechMilliseconds < SPEECH_CONFIRMATION_MILLISECONDS) {
+      const isSpeech = level > listening.noiseLevel * SPEECH_TO_NOISE_RATIO;
+      listening.speechMilliseconds = isSpeech ? listening.speechMilliseconds + LISTEN_INTERVAL_MILLISECONDS : Math.max(listening.speechMilliseconds - LISTEN_INTERVAL_MILLISECONDS, 0);
+      if (!isSpeech) listening.noiseLevel = Math.max(0.95 * listening.noiseLevel + 0.05 * level, MINIMUM_NOISE_LEVEL);
+      return;
+    }
+    listening.silenceMilliseconds = level < listening.noiseLevel * SILENCE_TO_NOISE_RATIO ? listening.silenceMilliseconds + LISTEN_INTERVAL_MILLISECONDS : 0;
+    if (listening.silenceMilliseconds >= SILENCE_AFTER_SPEECH_MILLISECONDS) {
+      stopListening();
+      onAnswerFinished();
+    }
+  }, LISTEN_INTERVAL_MILLISECONDS);
+}
+
+function testMicrophone() {
+  state.microphoneError = "";
+  openMicrophone()
+    .then(() => { if (!state.round) closeMicrophone(); })
+    .catch((error) => {
+      state.settings.continuesOnSpeech = false;
+      state.microphoneError = `Mikrofonen er ikke tilgængelig i denne browser (${error.name}).`;
+      persist();
+      render();
+    });
 }
 
 function publishNowPlaying() {
@@ -427,6 +527,7 @@ function sentenceRoundCallbacks() {
 }
 
 function beginRound(round) {
+  if (round.waitsForAnswer && state.settings.continuesOnSpeech) testMicrophone();
   state.round = round;
   state.isTextRevealed = false;
   round.start();
@@ -444,6 +545,7 @@ function startNewSentences() {
     isEndless: false,
     weightSteps: trackedWeightSteps(),
     danishFirst: state.settings.danishFirst,
+    waitsForAnswer: state.settings.waitsForAnswer,
     pauseSeconds: state.settings.pauseSeconds,
     translationPauseSeconds: state.settings.translationPauseSeconds,
     ...sentenceRoundCallbacks(),
@@ -461,6 +563,7 @@ function startRepetition() {
     isEndless: true,
     weightSteps: trackedWeightSteps(),
     danishFirst: state.settings.danishFirst,
+    waitsForAnswer: state.settings.waitsForAnswer,
     pauseSeconds: state.settings.pauseSeconds,
     translationPauseSeconds: state.settings.translationPauseSeconds,
     ...sentenceRoundCallbacks(),
@@ -545,7 +648,10 @@ function renderSentencesTab() {
     ${speedRow()}
     ${stepperRow(`Pause ${formatSeconds(settings.pauseSeconds)}`, "pauseSeconds")}
     ${switchRow("Dansk før tysk", "danishFirst")}
-    ${stepperRow(`Oversættelsespause ${formatSeconds(settings.translationPauseSeconds)}`, "translationPauseSeconds", !settings.danishFirst)}
+    ${switchRow("Vent på mig efter dansk", "waitsForAnswer")}
+    ${switchRow("Fortsæt, når jeg har talt", "continuesOnSpeech")}
+    ${state.microphoneError ? `<div class="row"><span class="error">${escapeHTML(state.microphoneError)}</span></div>` : ""}
+    ${stepperRow(`Oversættelsespause ${formatSeconds(settings.translationPauseSeconds)}`, "translationPauseSeconds", !settings.danishFirst || settings.waitsForAnswer)}
     ${switchRow("Vis dansk tekst", "showDanish")}
     ${switchRow("Vis tysk tekst som hjælp", "showGerman")}
     ${switchRow("Vis tidshint", "showTenseHint")}
@@ -640,6 +746,7 @@ function renderPlayer() {
       <button class="round-button" data-action="next" aria-label="Næste" ${round.isFinished ? "disabled" : ""}>${ICONS.next}</button>
     </div>
     <div class="card">${speedRow()}</div>
+    ${round.isAwaitingAnswer ? `<button class="answer-overlay" data-action="continue"><span class="answer-title">Din tur</span><span>${microphone.timer ? "Sig det på tysk, eller tryk hvor som helst" : "Tryk hvor som helst for at høre den tyske"}</span></button>` : ""}
   </div>`;
 }
 
@@ -657,7 +764,11 @@ function render() {
 const CLICK_ACTIONS = {
   tab: (target) => { state.tab = target.dataset.tab; },
   level: (target) => { state.settings[target.dataset.setting] = Number(target.dataset.level); persist(); },
-  toggle: (target) => { state.settings[target.dataset.setting] = !state.settings[target.dataset.setting]; persist(); },
+  toggle: (target) => {
+    state.settings[target.dataset.setting] = !state.settings[target.dataset.setting];
+    persist();
+    if (target.dataset.setting === "continuesOnSpeech" && state.settings.continuesOnSpeech) testMicrophone();
+  },
   step: (target) => {
     const setting = target.dataset.setting;
     const { minimum, maximum, step } = STEPPERS[setting];
@@ -672,6 +783,7 @@ const CLICK_ACTIONS = {
   weight: (target) => state.round.changeCurrentWeightStep(Number(target.dataset.direction)),
   learned: () => { state.isTextRevealed = false; state.round.markCurrentItemLearned(); },
   play: () => state.round.togglePlayback(),
+  continue: () => state.round.continueAfterAnswer(),
   previous: () => { state.isTextRevealed = false; state.round.rewindToPreviousDraw(); },
   next: () => { state.isTextRevealed = false; state.round.skipToNextDraw(); },
 };
