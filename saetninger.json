@@ -1057,7 +1057,7 @@
  },
  {
   "id":"s0086",
-  "de":"Ich bitte Sie, mir zu folgen; wer eine Frage hat, kann sie unterwegs stellen.",
+  "de":"Ich bitte euch, mir zu folgen; wer eine Frage hat, kann sie unterwegs stellen.",
   "da":"Jeg beder jer om at følge mig; den, der har et spørgsmål, kan stille det undervejs.",
   "target_lemmas":[
    "stellen",
@@ -1257,11 +1257,10 @@
  },
  {
   "id":"s0102",
-  "de":"Seit Sie gekündigt haben, bekommen wir deutlich weniger Aufträge – kommen Sie zurück?",
+  "de":"Seit du gekündigt hast, bekommen wir deutlich weniger Aufträge – kommst du zurück?",
   "da":"Siden du sagde op, har vi fået markant færre ordrer – kommer du tilbage?",
   "target_lemmas":[
    "kündigen",
-   "Sie",
    "Auftrag",
    "deutlich"
   ],
@@ -3110,7 +3109,7 @@
  },
  {
   "id":"s0252",
-  "de":"In der Anlage finden Sie erneut eine kurze Zusammenfassung des Buches.",
+  "de":"In der Anlage findest du erneut eine kurze Zusammenfassung des Buches.",
   "da":"Vedhæftet finder du igen et kort resumé af bogen.",
   "target_lemmas":[
    "Buch",
@@ -5037,12 +5036,11 @@
  },
  {
   "id":"s0408",
-  "de":"Haben Sie im letzten Jahr auch alte Theater gefördert?",
+  "de":"Hast du im letzten Jahr auch alte Theater gefördert?",
   "da":"Har du også støttet gamle teatre sidste år?",
   "target_lemmas":[
    "alt",
    "letzte(r,s)",
-   "Sie",
    "fördern"
   ],
   "level":1,
@@ -5911,7 +5909,7 @@
  },
  {
   "id":"s0478",
-  "de":"Treten Sie näher! Wir singen und feiern, alles dient einem guten Zweck.",
+  "de":"Tretet näher! Wir singen und feiern, alles dient einem guten Zweck.",
   "da":"Træd nærmere! Vi synger og fester, alt tjener et godt formål.",
   "target_lemmas":[
    "singen",
@@ -7621,11 +7619,10 @@
  },
  {
   "id":"s0617",
-  "de":"Wohnen Sie schon zehn Jahre in diesem Haus?",
+  "de":"Wohnst du schon zehn Jahre in diesem Haus?",
   "da":"Har du allerede boet ti år i dette hus?",
   "target_lemmas":[
    "zehn",
-   "Sie",
    "Haus"
   ],
   "level":1,
@@ -8995,7 +8992,7 @@
  },
  {
   "id":"s0728",
-  "de":"Liebe Kollegen, Sie können jetzt aktiv am Prozess mitwirken.",
+  "de":"Liebe Kollegen, ihr könnt jetzt aktiv am Prozess mitwirken.",
   "da":"Kære kolleger, I kan nu medvirke aktivt i processen.",
   "target_lemmas":[
    "lieb",
@@ -12658,10 +12655,9 @@
  },
  {
   "id":"s1023",
-  "de":"Ich habe überprüft, ob die nördliche Route Ihnen Zeit spart.",
+  "de":"Ich habe überprüft, ob die nördliche Route dir Zeit spart.",
   "da":"Jeg har tjekket, om den nordlige rute sparer dig tid.",
   "target_lemmas":[
-   "Ihnen",
    "nördlich",
    "überprüfen"
   ],
@@ -15330,7 +15326,7 @@
  },
  {
   "id":"s1246",
-  "de":"Herzlich willkommen! Folgen Sie den Zeichen, Ihr Zimmer liegt im Haus Nord.",
+  "de":"Herzlich willkommen! Folge den Zeichen, dein Zimmer liegt im Haus Nord.",
   "da":"Hjertelig velkommen! Følg skiltene, dit værelse ligger i Hus Nord.",
   "target_lemmas":[
    "Zeichen",
@@ -17036,7 +17032,7 @@
  },
  {
   "id":"s1393",
-  "de":"Mit Bezug auf Ihren Brief schickt die Kommission die Antwort per Post.",
+  "de":"Mit Bezug auf deinen Brief schickt die Kommission die Antwort per Post.",
   "da":"Med henvisning til dit brev sender kommissionen svaret med posten.",
   "target_lemmas":[
    "Bezug",
@@ -18457,7 +18453,7 @@
  },
  {
   "id":"s1511",
-  "de":"Gehen Sie die Straße am Park entlang, dann sehen Sie rechts das Lager.",
+  "de":"Geh die Straße am Park entlang, dann siehst du rechts das Lager.",
   "da":"Gå langs vejen ved parken, så ser du lageret til højre.",
   "target_lemmas":[
    "Park",
@@ -18630,10 +18626,9 @@
  },
  {
   "id":"s1526",
-  "de":"Wir gratulieren Ihnen zur Auszeichnung, kein Hotel im Norden hat Ihr Niveau.",
-  "da":"Vi ønsker dig tillykke med udmærkelsen, intet hotel i nord har dit niveau.",
+  "de":"Wir gratulieren euch zur Auszeichnung, kein Hotel im Norden hat euer Niveau.",
+  "da":"Vi ønsker jer tillykke med udmærkelsen, intet hotel i nord har jeres niveau.",
   "target_lemmas":[
-   "Ihnen",
    "Norden",
    "Niveau",
    "Auszeichnung"
@@ -20247,12 +20242,11 @@
  },
  {
   "id":"s1657",
-  "de":"Ist es Ihnen egal, ob ein Münchner oder ein Berliner gewinnt?",
+  "de":"Ist es dir egal, ob ein Münchner oder ein Berliner gewinnt?",
   "da":"Er det lige meget for dig, om en münchener eller en berliner vinder?",
   "target_lemmas":[
    "egal",
-   "Münchner",
-   "Ihnen"
+   "Münchner"
   ],
   "level":2,
   "tidshint":null
@@ -21648,7 +21642,7 @@
  },
  {
   "id":"s1772",
-  "de":"Seien Sie bitte kritisch: Welche Fehler hat die Koalition gemacht?",
+  "de":"Sei bitte kritisch: Welche Fehler hat die Koalition gemacht?",
   "da":"Vær venligst kritisk: Hvilke fejl har koalitionen begået?",
   "target_lemmas":[
    "Fehler",
@@ -21673,7 +21667,7 @@
  },
  {
   "id":"s1774",
-  "de":"Bevor wir uns verabschieden, brauchen wir Ihre Zustimmung: Behalten wir die dichte Hecke?",
+  "de":"Bevor wir uns verabschieden, brauchen wir deine Zustimmung: Behalten wir die dichte Hecke?",
   "da":"Før vi siger farvel, har vi brug for dit samtykke: Beholder vi den tætte hæk?",
   "target_lemmas":[
    "verabschieden",
@@ -21957,7 +21951,7 @@
  },
  {
   "id":"s1797",
-  "de":"Können Sie mir Auskunft über die Show im Wiener Prater geben?",
+  "de":"Kannst du mir Auskunft über die Show im Wiener Prater geben?",
   "da":"Kan du give mig oplysninger om showet i Prater i Wien?",
   "target_lemmas":[
    "Show",
@@ -25044,7 +25038,7 @@
  },
  {
   "id":"s2050",
-  "de":"Augenblick, ich stelle Ihnen das Rezept aus; nehmen Sie die Tabletten zweimal täglich ein.",
+  "de":"Augenblick, ich stelle dir das Rezept aus; nimm die Tabletten zweimal täglich ein.",
   "da":"Et øjeblik, jeg udskriver recepten til dig; tag tabletterne to gange dagligt.",
   "target_lemmas":[
    "Augenblick",
@@ -25718,7 +25712,7 @@
  },
  {
   "id":"s2106",
-  "de":"Eine Bitte an die Raucher: Verhalten Sie sich draußen ruhig, die Nachbarn schlafen.",
+  "de":"Eine Bitte an die Raucher: Verhaltet euch draußen ruhig, die Nachbarn schlafen.",
   "da":"En bøn til rygerne: Vær stille udenfor, naboerne sover.",
   "target_lemmas":[
    "draußen",
@@ -27179,7 +27173,7 @@
  },
  {
   "id":"s2229",
-  "de":"Sobald Sie sich anmelden, erhalten Sie automatisch eine Mitteilung.",
+  "de":"Sobald du dich anmeldest, erhältst du automatisch eine Mitteilung.",
   "da":"Så snart du tilmelder dig, får du automatisk en besked.",
   "target_lemmas":[
    "anmelden",
@@ -30462,7 +30456,7 @@
  },
  {
   "id":"s2503",
-  "de":"Hinter der sechsten Türe links können Sie den Betrag bar bezahlen.",
+  "de":"Hinter der sechsten Türe links kannst du den Betrag bar bezahlen.",
   "da":"Bag den sjette dør til venstre kan du betale beløbet kontant.",
   "target_lemmas":[
    "Betrag",
@@ -30842,7 +30836,7 @@
  },
  {
   "id":"s2535",
-  "de":"Ihr Schreiben zum diesjährigen Sommerfest hat uns sehr erfreut.",
+  "de":"Euer Schreiben zum diesjährigen Sommerfest hat uns sehr erfreut.",
   "da":"Jeres skrivelse om årets sommerfest har glædet os meget.",
   "target_lemmas":[
    "Schreiben",
@@ -31218,7 +31212,7 @@
  },
  {
   "id":"s2567",
-  "de":"Eventuelle ökologische Bedenken müssen Sie schriftlich einreichen.",
+  "de":"Eventuelle ökologische Bedenken musst du schriftlich einreichen.",
   "da":"Eventuelle økologiske betænkeligheder skal du indsende skriftligt.",
   "target_lemmas":[
    "schriftlich",
@@ -32434,7 +32428,7 @@
  },
  {
   "id":"s2667",
-  "de":"Wir versorgen zuerst die Wunde, dann unterschreiben Sie bitte unten in der Ecke.",
+  "de":"Wir versorgen zuerst die Wunde, dann unterschreibst du bitte unten in der Ecke.",
   "da":"Vi behandler først såret, så skriver du venligst under nede i hjørnet.",
   "target_lemmas":[
    "versorgen",
@@ -34527,7 +34521,7 @@
  },
  {
   "id":"s2839",
-  "de":"Halten Sie das Ticket trocken und zeigen Sie es bei Bedarf vor.",
+  "de":"Halte das Ticket trocken und zeig es bei Bedarf vor.",
   "da":"Hold billetten tør, og vis den frem ved behov.",
   "target_lemmas":[
    "Ticket",
@@ -34685,7 +34679,7 @@
  },
  {
   "id":"s2852",
-  "de":"Geben Sie Ihr Konto an; nach dem Gutachten besteht Aussicht auf Entschädigung.",
+  "de":"Gib dein Konto an; nach dem Gutachten besteht Aussicht auf Entschädigung.",
   "da":"Oplys dit kontonummer; ifølge vurderingen er der udsigt til erstatning.",
   "target_lemmas":[
    "Gutachten",
@@ -37251,7 +37245,7 @@
  },
  {
   "id":"s3065",
-  "de":"Als Dienstleistung beseitigen wir im Winter auch den Schnee vor Ihrem Haus.",
+  "de":"Als Dienstleistung beseitigen wir im Winter auch den Schnee vor deinem Haus.",
   "da":"Som en service fjerner vi om vinteren også sneen foran dit hus.",
   "target_lemmas":[
    "Dienstleistung",
@@ -38370,7 +38364,7 @@
  },
  {
   "id":"s3164",
-  "de":"Während Ihres Aufenthalts im Krankenhaus gelten strenge Vorschriften.",
+  "de":"Während deines Aufenthalts im Krankenhaus gelten strenge Vorschriften.",
   "da":"Under dit ophold på hospitalet gælder der strenge regler.",
   "target_lemmas":[
    "Vorschrift",
@@ -38485,7 +38479,7 @@
  },
  {
   "id":"s3175",
-  "de":"Vielen Dank für Ihre Bemühungen, der Aufenthalt war sehr angenehm.",
+  "de":"Vielen Dank für deine Bemühungen, der Aufenthalt war sehr angenehm.",
   "da":"Mange tak for din indsats, opholdet var meget behageligt.",
   "target_lemmas":[
    "angenehm",
@@ -39748,7 +39742,7 @@
  },
  {
   "id":"s3289",
-  "de":"Senden Sie uns die Unterlagen, dann beurteilen wir, wie wir vorgehen.",
+  "de":"Sende uns die Unterlagen, dann beurteilen wir, wie wir vorgehen.",
   "da":"Send os papirerne, så vurderer vi, hvordan vi griber det an.",
   "target_lemmas":[
    "senden",
@@ -42389,7 +42383,7 @@
  },
  {
   "id":"s3525",
-  "de":"Auf Ihr Wohl! Und vielen Dank für das aufwändige kroatische Essen.",
+  "de":"Auf dein Wohl! Und vielen Dank für das aufwändige kroatische Essen.",
   "da":"Skål! Og mange tak for den kroatiske mad, som du har gjort så meget ud af.",
   "target_lemmas":[
    "Wohl",
@@ -42553,7 +42547,7 @@
  },
  {
   "id":"s3539",
-  "de":"Bitte bleiben Sie nach erfolgter Landung angeschnallt, bis der Pilot das Zeichen gibt.",
+  "de":"Bitte bleibt nach erfolgter Landung angeschnallt, bis der Pilot das Zeichen gibt.",
   "da":"Bliv venligst siddende med selen spændt efter landingen, indtil piloten giver tegn.",
   "target_lemmas":[
    "erfolgt",
@@ -42806,7 +42800,7 @@
  },
  {
   "id":"s3561",
-  "de":"Ist Ihr Ausweis noch gültig? Sonst darf ich Ihnen keine Flasche Wein verkaufen.",
+  "de":"Ist dein Ausweis noch gültig? Sonst darf ich dir keine Flasche Wein verkaufen.",
   "da":"Er dit ID stadig gyldigt? Ellers må jeg ikke sælge dig en flaske vin.",
   "target_lemmas":[
    "gültig",
@@ -43348,7 +43342,7 @@
  },
  {
   "id":"s3608",
-  "de":"Hallo, können Sie mir sagen, wer dieses Projekt verantwortet?",
+  "de":"Hallo, kannst du mir sagen, wer dieses Projekt verantwortet?",
   "da":"Hej, kan du sige mig, hvem der har ansvaret for dette projekt?",
   "target_lemmas":[
    "verantworten",
@@ -45103,7 +45097,7 @@
  },
  {
   "id":"s3762",
-  "de":"Eine Option wäre, Ihnen die Unterlagen per Post zukommen zu lassen.",
+  "de":"Eine Option wäre, dir die Unterlagen per Post zukommen zu lassen.",
   "da":"En mulighed ville være at sende dig papirerne med posten.",
   "target_lemmas":[
    "zukommen",
@@ -46569,7 +46563,7 @@
  },
  {
   "id":"s3894",
-  "de":"Beachten Sie: Im Tunnel ist das Fahren mit elektrischen Rollern verboten.",
+  "de":"Beachte: Im Tunnel ist das Fahren mit elektrischen Rollern verboten.",
   "da":"Bemærk: I tunnelen er kørsel på elløbehjul forbudt.",
   "target_lemmas":[
    "Tunnel",
@@ -50168,7 +50162,7 @@
  },
  {
   "id":"s4207",
-  "de":"Vergessen Sie den Mythos vom schnellen Durchbruch, appellierte die Forscherin an alle.",
+  "de":"Vergesst den Mythos vom schnellen Durchbruch, appellierte die Forscherin an alle.",
   "da":"Glem myten om det hurtige gennembrud, appellerede forskeren til alle.",
   "target_lemmas":[
    "appellieren",
@@ -50550,7 +50544,7 @@
  },
  {
   "id":"s4240",
-  "de":"Entschuldigen Sie, wegen der Sperre fahren an Ostern Busse anstelle der Bahn.",
+  "de":"Entschuldige, wegen der Sperre fahren an Ostern Busse anstelle der Bahn.",
   "da":"Undskyld, på grund af spærringen kører der busser i stedet for tog i påsken.",
   "target_lemmas":[
    "Sperre",
@@ -51749,7 +51743,7 @@
  },
  {
   "id":"s4344",
-  "de":"Entschuldigen Sie, wie komme ich zum Atelier an der Landstraße?",
+  "de":"Entschuldige, wie komme ich zum Atelier an der Landstraße?",
   "da":"Undskyld, hvordan kommer jeg til atelieret ved landevejen?",
   "target_lemmas":[
    "Landstraße",
@@ -52906,7 +52900,7 @@
  },
  {
   "id":"s4444",
-  "de":"Für die Lizenz ist eine Überprüfung fällig; stellen Sie bitte Unterlagen bereit.",
+  "de":"Für die Lizenz ist eine Überprüfung fällig; stell bitte Unterlagen bereit.",
   "da":"Til licensen skal der foretages en kontrol; hav venligst dokumenter klar.",
   "target_lemmas":[
    "Lizenz",
@@ -53692,7 +53686,7 @@
  },
  {
   "id":"s4513",
-  "de":"Ich verlange, dass Sie mir mein Eigentum umgehend zurückgeben.",
+  "de":"Ich verlange, dass du mir mein Eigentum umgehend zurückgibst.",
   "da":"Jeg kræver, at du omgående giver mig min ejendom tilbage.",
   "target_lemmas":[
    "Eigentum",
