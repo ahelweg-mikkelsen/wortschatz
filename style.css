@@ -117,4 +117,3 @@ input[type="range"] { width: 100%; accent-color: var(--accent); height: 36px; }
 
 .answer-overlay { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; border: 0; background: rgba(0, 0, 0, 0.6); color: var(--secondary); font: inherit; font-size: 24px; cursor: pointer; }
 .answer-overlay .answer-title { color: var(--accent); font-size: 64px; font-weight: 700; }
-.row .error { text-align: left; }
